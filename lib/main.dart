@@ -1,15 +1,16 @@
 import 'dart:math';
-
+import 'package:animated_widgets/animated_widgets.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 void main() {
   return runApp(
     MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.redAccent,
         appBar: AppBar(
           title: Text('Dicee'),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.deepOrange,
         ),
         body: DicePage(),
       ),
@@ -25,6 +26,8 @@ class DicePage extends StatefulWidget {
 class _DicePageState extends State<DicePage> {
   int leftDiceNumber = 1;
   int rightDiceNumber = 1;
+  bool rightEnabled = false;
+  bool leftEnabled = false;
   var random = Random();
 
   getDiceValue(oldNumber) {
@@ -35,29 +38,61 @@ class _DicePageState extends State<DicePage> {
     return newNumber;
   }
 
+  void handleRightDiceUpdate() {
+    setState(() {
+      rightEnabled = true;
+    });
+
+    new Timer(Duration(milliseconds: 400), () {
+      setState(() {
+        rightEnabled = false;
+        rightDiceNumber = this.getDiceValue(rightDiceNumber);
+      });
+    });
+  }
+
+  void handleLeftDiceUpdate() {
+    if (leftEnabled == true) {
+      return;
+    }
+    setState(() {
+      leftEnabled = true;
+    });
+
+    new Timer(Duration(milliseconds: 400), () {
+      setState(() {
+        leftEnabled = false;
+        leftDiceNumber = this.getDiceValue(leftDiceNumber);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Row(
         children: <Widget>[
           Expanded(
-            child: FlatButton(
-              onPressed: () {
-                setState(() {
-                  leftDiceNumber = this.getDiceValue(leftDiceNumber);
-                });
-              },
-              child: Image.asset("images/dice$leftDiceNumber.png"),
+            child: ShakeAnimatedWidget(
+              duration: Duration(milliseconds: 200),
+              enabled: leftEnabled,
+              curve: Curves.easeOut,
+              shakeAngle: Rotation.deg(z: leftEnabled ? 30 : 0),
+              child: FlatButton(
+                onPressed: this.handleLeftDiceUpdate,
+                child: Image.asset("images/dice$leftDiceNumber.png"),
+              ),
             ),
           ),
           Expanded(
-            child: FlatButton(
-              onPressed: () {
-                setState(() {
-                  rightDiceNumber = this.getDiceValue(rightDiceNumber);
-                });
-              },
-              child: Image.asset("images/dice$rightDiceNumber.png"),
+            child: ShakeAnimatedWidget(
+              duration: Duration(milliseconds: 200),
+              shakeAngle: Rotation.deg(z: rightEnabled ? 30 : 0),
+              enabled: rightEnabled,
+              child: FlatButton(
+                onPressed: this.handleRightDiceUpdate,
+                child: Image.asset("images/dice$rightDiceNumber.png"),
+              ),
             ),
           )
         ],
