@@ -10,7 +10,7 @@ void main() {
         backgroundColor: Colors.redAccent,
         appBar: AppBar(
           title: Text('Dicee'),
-          backgroundColor: Colors.deepOrange,
+          backgroundColor: Colors.red,
         ),
         body: DicePage(),
       ),
@@ -36,6 +36,11 @@ class _DicePageState extends State<DicePage> {
       newNumber = random.nextInt(6) + 1;
     }
     return newNumber;
+  }
+
+  void handleBothDiceUpdate() {
+    this.handleLeftDiceUpdate();
+    this.handleRightDiceUpdate();
   }
 
   void handleRightDiceUpdate() {
@@ -79,7 +84,7 @@ class _DicePageState extends State<DicePage> {
               curve: Curves.easeOut,
               shakeAngle: Rotation.deg(z: leftEnabled ? 30 : 0),
               child: FlatButton(
-                onPressed: this.handleLeftDiceUpdate,
+                onPressed: this.handleBothDiceUpdate,
                 child: Image.asset("images/dice$leftDiceNumber.png"),
               ),
             ),
@@ -87,10 +92,10 @@ class _DicePageState extends State<DicePage> {
           Expanded(
             child: ShakeAnimatedWidget(
               duration: Duration(milliseconds: 200),
-              shakeAngle: Rotation.deg(z: rightEnabled ? 30 : 0),
+              shakeAngle: Rotation.deg(z: rightEnabled ? -30 : 0),
               enabled: rightEnabled,
               child: FlatButton(
-                onPressed: this.handleRightDiceUpdate,
+                onPressed: this.handleBothDiceUpdate,
                 child: Image.asset("images/dice$rightDiceNumber.png"),
               ),
             ),
